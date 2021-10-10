@@ -44,7 +44,7 @@ Ada enam tipe virtualisasi :
 
 Penggunaan utama teknologi virtualisasi adalah virtualisasi server,  yang menggunakan lapisan perangkat lunak yang disebut hypervisor untuk  meniru perangkat keras yang mendasarinya. Hypervisor mengambil sumber  daya fisik dan memisahkannya sehingga dapat dimanfaatkan oleh virtual  environment. Mereka dapat berjalan di atas OS atau mereka dapat langsung diinstal ke perangkat keras.
 
-![VIRTUALISASI](assets\VIRTUALISASI.jpg)
+![VIRTUALISASI](assets/VIRTUALISASI.jpg)
 
 Proses virtualisasi mengikuti langkah-langkah yang tercantum di bawah ini:
 
@@ -126,7 +126,7 @@ Platform ini merupakan cikal bakal  lahirnya container. Linux Containers (LXC) i
   deb-src http://archive.canonical.com/ubuntu focal partner
   ```
 
-  ![edit-source-list](assets\edit-source-list.png)
+  ![edit-source-list](assets/edit-source-list.png)
 
   ```
   sudo apt update; sudo apt upgrade -y
@@ -154,7 +154,7 @@ Platform ini merupakan cikal bakal  lahirnya container. Linux Containers (LXC) i
 
   hasilnya :
 
-  ![show-templates](assets\show-templates.png)
+  ![show-templates](assets/show-templates.png)
 
 - Membuat container Ubuntu
 
@@ -170,7 +170,7 @@ Platform ini merupakan cikal bakal  lahirnya container. Linux Containers (LXC) i
   sudo lxc-create -n server1_ubuntu -t ubuntu
   ```
 
-  ![instalasi-lxc](assets\instalasi-lxc.png)
+  ![instalasi-lxc](assets/instalasi-lxc.png)
 
 - Menjalankan container
 
@@ -190,7 +190,7 @@ Platform ini merupakan cikal bakal  lahirnya container. Linux Containers (LXC) i
   sudo apt update; sudo apt upgrade -y
   ```
 
-  ![console-test](assets\console-test.png)
+  ![console-test](assets/console-test.png)
 
   Untuk keluar dari lxc-console, tekan **ctrl + a**, selanjutnya tekan **q**
 
@@ -206,7 +206,7 @@ Platform ini merupakan cikal bakal  lahirnya container. Linux Containers (LXC) i
   sudo lxc-ls	-f
   ```
 
-  ![lxc-ls](assets\lxc-ls.png)
+  ![lxc-ls](assets/lxc-ls.png)
 
 - Menampilkan informasi dari sebuah container
 
@@ -214,7 +214,7 @@ Platform ini merupakan cikal bakal  lahirnya container. Linux Containers (LXC) i
   sudo lxc-info -n server1_ubuntu
   ```
 
-  ![lxc-info](assets\lxc-info.png)
+  ![lxc-info](assets/lxc-info.png)
 
 - Menampilkan alamat IP container
 
@@ -222,7 +222,7 @@ Platform ini merupakan cikal bakal  lahirnya container. Linux Containers (LXC) i
   sudo lxc-ls --fancy server1_ubuntu
   ```
 
-  ![lxc-fancy](assets\lxc-fancy.png)
+  ![lxc-fancy](assets/lxc-fancy.png)
 
 - Menghentikan container
 
@@ -236,7 +236,7 @@ Platform ini merupakan cikal bakal  lahirnya container. Linux Containers (LXC) i
   sudo lxc-destroy server2_ubuntu	
   ```
 
-  ![lxc-destroy](assets\lxc-destroy.png)
+  ![lxc-destroy](assets/lxc-destroy.png)
 
 
 
