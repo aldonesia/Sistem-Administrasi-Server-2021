@@ -86,6 +86,8 @@ Platform ini merupakan cikal bakal  lahirnya container. Linux Containers (LXC) i
 | Terisolasi penuh pada level hardware sehingga lebih aman | Terisolasi pada level proses                     |
 
 ## Instalasi
+- Instalasi vm
+  https://ciperx.com/install-ubuntu-server/ storage 35GB
 
 - Persiapan *Server host*
 
