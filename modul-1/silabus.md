@@ -110,29 +110,27 @@ Platform ini merupakan cikal bakal  lahirnya container. Linux Containers (LXC) i
   deb http://archive.ubuntu.com/ubuntu/ focal-updates main restricted universe multiverse
   deb-src http://archive.ubuntu.com/ubuntu/ focal-updates main restricted universe multiverse
   
-
-deb http://archive.ubuntu.com/ubuntu/ focal-security main restricted universe multiverse
+  deb http://archive.ubuntu.com/ubuntu/ focal-security main restricted universe multiverse
   deb-src http://archive.ubuntu.com/ubuntu/ focal-security main restricted universe multiverse
-
+  
   deb http://archive.ubuntu.com/ubuntu/ focal-backports main restricted universe multiverse
   deb-src http://archive.ubuntu.com/ubuntu/ focal-backports main restricted universe multiverse
-
+  
   deb http://archive.canonical.com/ubuntu focal partner
   deb-src http://archive.canonical.com/ubuntu focal partner
+  
   ```
   
   ![edit-source-list](assets/edit-source-list.png)
   
-  ```
+  ```bash
   sudo apt update; sudo apt upgrade -y
   ```
   
-  
-
 - Install lxc 
 
   ```bash
-  sudo apt-get install lxc lxctl lxc-templates net-tools
+  sudo apt-get install lxc lxctl lxc-templates net-tools  
   ```
 
 - Check Konfigurasi
@@ -198,7 +196,7 @@ deb http://archive.ubuntu.com/ubuntu/ focal-security main restricted universe mu
 - Menampilkan container yang tersedia
 
   ```bash
-  sudo lxc-ls	-f
+  sudo lxc-ls -f
   ```
 
   ![lxc-ls](assets/lxc-ls.png)
