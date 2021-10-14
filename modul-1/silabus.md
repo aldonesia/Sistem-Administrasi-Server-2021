@@ -95,20 +95,12 @@ Platform ini merupakan cikal bakal  lahirnya container. Linux Containers (LXC) i
   sudo apt install -y build-essential linux-headers-$(uname -r)
   ```
 
-  On the VM window, go to **Devices** » **Insert Guest Additions CD Image**, and install it:
-
-  ```bash
-  sudo mount /dev/cdrom /media
-  cd /media
-  sudo bash VBoxLinuxAdditions.run
-  ```
-
   Mengganti *sources list* ubuntu
 
   ```bash
   sudo nano /etc/apt/sources.list
   ```
-
+  
   menjadi
 
   ```ini
@@ -118,22 +110,23 @@ Platform ini merupakan cikal bakal  lahirnya container. Linux Containers (LXC) i
   deb http://archive.ubuntu.com/ubuntu/ focal-updates main restricted universe multiverse
   deb-src http://archive.ubuntu.com/ubuntu/ focal-updates main restricted universe multiverse
   
-  deb http://archive.ubuntu.com/ubuntu/ focal-security main restricted universe multiverse
+
+deb http://archive.ubuntu.com/ubuntu/ focal-security main restricted universe multiverse
   deb-src http://archive.ubuntu.com/ubuntu/ focal-security main restricted universe multiverse
-  
+
   deb http://archive.ubuntu.com/ubuntu/ focal-backports main restricted universe multiverse
   deb-src http://archive.ubuntu.com/ubuntu/ focal-backports main restricted universe multiverse
-  
+
   deb http://archive.canonical.com/ubuntu focal partner
   deb-src http://archive.canonical.com/ubuntu focal partner
   ```
-
+  
   ![edit-source-list](assets/edit-source-list.png)
-
+  
   ```
   sudo apt update; sudo apt upgrade -y
   ```
-
+  
   
 
 - Install lxc 
@@ -252,11 +245,53 @@ Platform ini merupakan cikal bakal  lahirnya container. Linux Containers (LXC) i
 
 ## Soal Latihan Praktikum
 
+![topologi](assets/topologi.PNG)
+
+1. pastikan vm network di set di bridged adapter
+
+   ![Network-VM](assets/Network-VM.PNG)
+
+2. start ubuntu server,
+
+3. check network pada terminal ubuntu server
+
+   ![ipdetails](assets/ipdetails.PNG)
+
+   dapat kita lihat bahwa ubuntu server mendapatkan IP 172.20.10.2 dengan netmask 255.255.255.240 atau /28 ( Ingat kah kalian dengan penghitungan netmask? )
+
+4. setup static IP pada ubuntu server
+
+   ```bash
+   sudo nano /etc/netplan/00-installer-config.yaml
+   ```
+
+   ![netplan_new](assets/netplan_new.PNG)
+
+   ```bash
+   sudo netplan apply
+   ifconfig
+   ```
+
+   ![netplan_vm_apply](assets/netplan_new_detail.PNG)
+
+   ```bash
+   ping 1.1.1.1
+   ping google.com
+   ```
+
+   
+
 1. Buat 2 LXC dengan nama ubuntu_php5.6 (dengan ubuntu 16.04) dan ubuntu_php7.4 (dengan ubuntu 18.04)
 
    ```bash
    hint:
    sudo lxc-create -n ubuntu_php5.6 -t download -- --dist ubuntu --release xenial --arch amd64 --force-cache --no-validate --server images.linuxcontainers.org
+   sudo lxc-start -n ubuntu_php5.6
+   
+   
+   sudo lxc-create -n ubuntu_php7.4 -t download -- --dist ubuntu --release bionic --arch amd64 --force-cache --no-validate --server images.linuxcontainers.org
+   sudo lxc-start -n ubuntu_php7.4
+   
    ```
 
    hint: gunakana lxc-attach daripada lxc-console
@@ -266,6 +301,14 @@ Platform ini merupakan cikal bakal  lahirnya container. Linux Containers (LXC) i
    ```bash
    hint:
    sudo apt install nginx nginx-extras
+   
+   sudo lxc-attach -n ubuntu_php5.6
+   sudo apt install nginx nginx-extras
+   exit
+   
+   sudo lxc-attach -n ubuntu_php7.4
+   sudo apt install nginx nginx-extras
+   exit
    ```
 
    
@@ -277,8 +320,126 @@ Platform ini merupakan cikal bakal  lahirnya container. Linux Containers (LXC) i
    gunakan proxy_pass, set static ip dulu ke masing masing lxc
    ```
 
-   
+   - ubuntu_php5.6
 
-   
+     - set static IP
 
+       ```bash
+       apt install nano net-tools curl
+       nano /etc/network/interfaces
+       ```
+
+       ![php5.6_static_ip](assets/php5.6_static_ip.PNG)
+
+       ```bash
+       systemctl restart networking.service
+       ```
+
+       ![php5.6_ifconfig](assets/php5.6_ifconfig.PNG)
+
+     - Setting Nginx
+
+       ```bash
+       cd /etc/nginx/sites-available
+       touch lxc_php5.6.dev
+       nano lxc_php5.6.dev
+       ```
+
+       ![php5.6_nginx](assets/php5.6_nginx.PNG)
+
+       ```bash
+       cd ../sites-enable
+       ln -s /etc/nginx/sites-available/lxc_php5.6.dev .
+       nginx -t
+       nginx -s reload
+       nano /etc/hosts
+       ```
+
+       ![php5.6_hosts](assets/php5.6_hosts.PNG)
+
+       ```bash
+       cd /var/www/html
+       mkdir lxc_php5.6
+       cp index.nginx-debian.html lxc_php5.6/index.html
+       nano index.html
+       ```
+
+       ![php5.6_indexhtml](assets/php5.6_indexhtml.PNG)
+
+       ```bash
+       curl -i http://lxc_php5.dev 
+       ```
+
+       
+
+   - ubuntu_php7.4
+
+     - Setting static IP
+
+       ```bash
+       apt install nano net-tools curl
+       sudo nano /etc/netplan/10-lxc.yaml
+       ```
+
+       ![php7.4_static_ip](assets/php7.4_static_ip.PNG)
+
+       ```bash
+       sudo netplan apply
+       ifconfig
+       ```
+
+       ![php7.4_ifconfig](assets/php7.4_ifconfig.PNG)
+
+     - Setting nginx
+
+   - vm
+
+     - Setting hosts
+
+       ```bash
+       sudo nano /etc/hosts
+       ```
+
+       ![vm_host](assets/vm_host.PNG)
+
+     - Setting nginx
+
+       ```bash
+       sudo apt install nginx nginx-extras
+       cd /etc/nginx/sites-available
+       sudo touch vm.local
+       sudo nano vm.local
+       ```
+
+       ![vm_nginx](assets/vm_nginx.PNG)
+
+       ```bash
+       sudo ln -s /etc/nginx/sites-available/vm.local .
+       sudo nginx -t
+       sudo nginx -s reload
+       curl -i http://vm.local/php5
+       ```
+
+   - laptop/windows
+
+     - setting hosts
+
+       - buka notepad dengan run as administrator
+
+         ![laptop_notepad](assets/laptop_notepad.PNG)
+
+       - edit host file C:\Windows\System32\drivers\etc\hosts
+
+         ![laptop_notepad_open](assets/laptop_notepad_open.PNG)
+
+         
+         
+         ![laptop_hostfile](assets/laptop_hostfile.PNG)
+
+       
+     
+     - cek browser
+     
+       ![laptop_browser](assets/laptop_browser.PNG)
+   
    
