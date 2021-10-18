@@ -12,15 +12,15 @@ Gilang dan Adit adalah sysadmin junior pada suatu perusahaan. Perusahaan tersebu
 
 Setelah mendengarkan strategi domain dari CTO, Mereka mencoba membuat virtualisasi sederhana dengan skema dibawah ini :
 
-![topologi](assets\topologi.PNG)
+![topologi](assets/topologi.PNG)
 
 Dari skema diatas, mereka mementukan bahwa lxc_php5.dev akan digunakan sebagai server aplikasi dan lxc_php7.dev akan digunakan sebagai server blog dan vm.local digunakan sebagai proxy server serta untuk web landing page. Lantas, mereka bertemu dengan tim programmer. Tim Programmer memberi tahu kepada mereka bahwa ada perubahan baru baru ini terkait ubuntu 16.04.
 
-![news](assets\news.PNG)
+![news](assets/news.PNG)
 
 Karena hal ini, mereka berdiskusi dengan tim programmer dan menghasilkan suatu keputusan dimana skema yang akan dibuat adalah:
 
-![soal_praktikum](assets\soal_praktikum.png)
+![soal_praktikum](assets/soal_praktikum.png)
 
 ## Soal Praktikum
 
@@ -63,4 +63,4 @@ Dari skema diatas maka mereka akan melakukan pekerjaan sebagai berikut :
 
 
 
-![meme-laprak](assets\meme-laprak.jpg)
+![meme-laprak](assets/meme-laprak.jpg)
