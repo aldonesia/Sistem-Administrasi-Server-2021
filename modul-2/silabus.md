@@ -148,14 +148,16 @@ Ansible adalah sebuah provisioning tool yang dikembangkan oleh  RedHat. Dimana k
 2. Buat file `install-lynx.yml` dengan isi sebagai berikut
 
    ```yaml
-     - hosts: php5
-       tasks:
-         - name: Install lynx
-           become: yes #untuk menjadi superuser
-           apt: name={{ item }} state=latest update_cache=true
-           with_items:
-             - lynx
+   - hosts: php5
+     tasks:
+       - name: Install lynx
+         become: yes #untuk menjadi superuser
+         apt: name={{ item }} state=latest update_cache=true
+         with_items:
+           - lynx
    ```
+
+   
 
 3. Jalankan Perintah
 
@@ -301,10 +303,10 @@ lxc-copy -n ubuntu_landing -N ubuntu_landing_backup -sKD
 
        ```bash
        [php5]
-       ubuntu_landing ansible_host=lxc_landing.dev ansible_ssh_user=root ansible_become_pass=a
        debian_php5 ansible_host=lxc_php5.dev ansible_ssh_user=root ansible_become_pass=a
        
        [php7]
+       ubuntu_landing ansible_host=lxc_landing.dev ansible_ssh_user=root ansible_become_pass=a
        ubuntu_php7 ansible_host=lxc_php7.dev ansible_ssh_user=root ansible_become_pass=a
        
        [database]
@@ -732,7 +734,7 @@ lxc-copy -n ubuntu_landing -N ubuntu_landing_backup -sKD
      - Jalankan perintah:
      
      ```bash
-       cd ~/ansible/modul2-ansible
+     cd ~/ansible/modul2-ansible
      ansible-playbook -i hosts install-mariadb.yml -k
      ```
      
@@ -748,13 +750,13 @@ lxc-copy -n ubuntu_landing -N ubuntu_landing_backup -sKD
                root /var/www/html;
                index index.html;
        
-               location /php5 {
-                       rewrite /php5/?(.*)$ /$1 break;
+               location /app {
+                       rewrite /app/?(.*)$ /$1 break;
                        proxy_pass http://lxc_php5.dev;
                }
        
-               location /php7 {
-                       rewrite /php7/?(.*)$ /$1 break;
+               location /blog {
+                       rewrite /blog/?(.*)$ /$1 break;
                        proxy_pass http://lxc_php7.dev;
                }
        
@@ -777,121 +779,165 @@ lxc-copy -n ubuntu_landing -N ubuntu_landing_backup -sKD
      
      ![phpmyadmin-logined](assets/phpmyadmin-logined.png)
    
-2. Install codeigniter pada lxc_landing.dev dengan beberapa requirement, yakni:
+2. Install codeigniter pada lxc_php5.dev dengan beberapa requirement, yakni:
 
    - Menggunakan PHP5, dikonfigurasikan dengan ansible dan konfigurasikan ansible untuk menginstal php5.6 digroup php5
 
    - Clone Codeigniter dari https://github.com/aldonesia/sas-ci
 
-   - Menggunakan database landing yang terdapat pada lxc_mariadb
+   - Menggunakan database app yang terdapat pada lxc_mariadb
 
      Jawab
 
-     1. Membuat roles instalasi php5
+     - Buat file deploy-app.yml
 
-        - Buat file install-php5.yml
+       ```
+       - hosts: php5
+         vars:
+           git_url: 'https://github.com/aldonesia/sas-ci'
+           destdir: '/var/www/html/ci'
+           domain: 'lxc_php5.dev'
+         roles:
+           - app
+       ```
 
-        - Disini kita akan membuat roles yang bernama `php5` . roles ini berisi kumpulan task instalasi dan konfigurasi phpmyadmin
+     - Disini kita akan membuat roles yang bernama `app` . roles ini berisi kumpulan task instalasi dan konfigurasi phpmyadmin
 
-        - Didalam folder `roles/php5` terdapat beberapa folder, yakni `handlers`, `tasks` dan `templates`. Folder `handlers` berisi perintah perintah untuk menjalankan nginx dan php seperti restart, sedangkan folder `tasks` berisi script instalasi phpmyadmin dan folder `templates` berisi template konfigurasi untuk nginx.
+     - Didalam folder `roles/app` terdapat beberapa folder, yakni `handlers`, `tasks` dan `templates`. Folder `handlers` berisi perintah perintah untuk menjalankan nginx dan php seperti restart, sedangkan folder `tasks` berisi script instalasi phpmyadmin dan folder `templates` berisi template konfigurasi untuk nginx.
 
-        - roles/php5/tasks/main.yml akan berisi:
+       ```bash
+       mkdir -p roles/app/tasks
+       mkdir -p roles/app/handlers
+       mkdir -p roles/app/templates
+       ```
 
-          ```yaml
-          ---
-          - name: delete apt chache
-            become: yes
-            become_user: root
-            become_method: su
-            command: rm -vf /var/lib/apt/lists/*
-          
-          - name: install requirement dpkg to install php5
-            become: yes
-            become_user: root
-            become_method: su
-            apt: name={{ item }} state=latest update_cache=true
-            with_items:
-              - ca-certificates
-              - apt-transport-https
-          	- wget
-          	- curl
-          	- python-apt
-          
-          - name: get gpg
-            become: yes
-            become_user: root
-            become_method: su
-            command: wget -q https://packages.sury.org/php/apt.gpg -O- | sudo apt-key add -
-          
-          - name: Add specified repository into sources list
-            ansible.builtin.apt_repository:
-              repo: deb https://packages.sury.org/php/ stretch main
-              state: present
-          	update_cache: true
-            when: ansible_distribution == 'Debian' and ansible_distribution_version == '9'
-          
-          - name: Add nginx stable repository from PPA and install its signing key on Debian target
-            ansible.builtin.apt_repository:
-              repo: 'ppa:ondrej/php'
-              codename: bionic
-            when: ansible_distribution == 'Ubuntu' and ansible_distribution_release == 'bionic'
-          
-          - name: install nginx php5
-            become: yes
-            become_user: root
-            become_method: su
-            apt: name={{ item }} state=latest update_cache=true
-            with_items:
-              - nginx
-              - nginx-extras
-              - php5.6
-              - php5.6-fpm
-              - php5.6-common
-              - php5.6-cli
-              - php5.6-curl
-              - php5.6-mbstring
-              - php5.6-mysqlnd
-              - php5.6-xml
-              
-          ```
+     - roles/app/tasks/main.yml akan berisi:
 
-          
+       ```
+       ---
+       - name: delete apt chache
+         become: yes
+         become_user: root
+         become_method: su
+         command: rm -vf /var/lib/apt/lists/*
+       
+       - name: install requirement dpkg to install php5
+         become: yes
+         become_user: root
+         become_method: su
+         apt: name={{ item }} state=latest update_cache=true
+         with_items:
+           - ca-certificates
+           - apt-transport-https
+           - wget
+           - curl
+           - python-apt
+           - software-properties-common
+           - git
+       
+       - name: Add key
+         apt_key:
+           url: https://packages.sury.org/php/apt.gpg
+           state: present
+       
+       - name: Add Php Repository
+         apt_repository:
+             repo: "deb https://packages.sury.org/php/ stretch main"
+             state: present
+             filename: php.list
+             update_cache: true
+       
+       - name: install nginx php5
+         become: yes
+         become_user: root
+         become_method: su
+         apt: name={{ item }} state=latest update_cache=true
+         with_items:
+           - nginx
+           - nginx-extras
+           - php5.6
+           - php5.6-fpm
+           - php5.6-common
+           - php5.6-cli
+           - php5.6-curl
+           - php5.6-mbstring
+           - php5.6-mysqlnd
+           - php5.6-xml
+       
+       - name: Git clone repo sas-ci
+         become: yes
+         git:
+           repo: '{{ git_url }}'
+           dest: "{{ destdir }}"
+       
+       - name: Copy app.conf
+         template:
+           src=templates/app.conf
+           dest=/etc/nginx/sites-available/{{ domain }}
+         vars:
+           servername: '{{ domain }}'
+       
+       - name: Delete another nginx config
+         become: yes
+         become_user: root
+         become_method: su
+         command: rm -f /etc/nginx/sites-enabled/*
+       
+       - name: Symlink app.conf
+         command: ln -sfn /etc/nginx/sites-available/{{ domain }} /etc/nginx/sites-enabled/{{ domain }}
+         notify:
+           - restart nginx
+       
+       - name: Write {{ domain }} to /etc/hosts
+         lineinfile:
+           dest: /etc/hosts
+           regexp: '.*{{ domain }}$'
+           line: "127.0.0.1 {{ domain }}"
+           state: present
+       ```
 
-        - roles/php5/templates/main.yml akan berisi:
+     - roles/app/templates/app.conf akan berisi:
 
-        - roles/php5/handler/main.yml akan berisi:
+       ```ini
+       server {
+         listen 80;`
+         server_name {{servername}};
+         root {{ destdir }};
+         index index.php;
+         location / {
+            try_files $uri $uri/ /index.php?$query_string;
+         }
+         location ~ \.php$ {
+            fastcgi_pass unix:/run/php/php5.6-fpm.sock;  #Sesuaikan dengan versi PHP
+            fastcgi_index index.php;
+            fastcgi_param SCRIPT_FILENAME {{ destdir }}$fastcgi_script_name;
+            include fastcgi_params;
+         }
+       }
+       ```
 
-     2. Membuat roles instalasi ci
+     - roles/app/handlers/main.yml akan berisi:
 
-        - Buat file deploy-landing.yml
+       ```
+       ---
+       - name: restart nginx
+         become: yes
+         become_user: root
+         become_method: su
+         action: service name=nginx state=restarted
+        
+       - name: restart php
+         become: yes
+         become_user: root
+         become_method: su
+         action: service name=php5.6-fpm state=restarted
+       ```
 
-        - Disini kita akan membuat roles yang bernama `landing` . roles ini berisi kumpulan task instalasi dan konfigurasi phpmyadmin
+     - Jalankan perintah
 
-        - Didalam folder `roles/landing` terdapat beberapa folder, yakni `handlers`, `tasks` dan `templates`. Folder `handlers` berisi perintah perintah untuk menjalankan nginx dan php seperti restart, sedangkan folder `tasks` berisi script instalasi phpmyadmin dan folder `templates` berisi template konfigurasi untuk nginx.
+       ```
+       ansible-playbook -i hosts deploy-app.yml -k
+       ```
 
-        - roles/landing/tasks/main.yml akan berisi:
-
-          ```
-          ---
-          - name: delete apt chache
-            become: yes
-            become_user: root
-            become_method: su
-            command: rm -vf /var/lib/apt/lists/*
-          
-          - name: install requirement dpkg to deploy ci
-            become: yes
-            become_user: root
-            become_method: su
-            apt: name={{ item }} state=latest update_cache=true
-            with_items:
-              - git
-          
-          ```
-
-          
-
-        - roles/landing/templates/main.yml akan berisi:
-
-        - roles/landing/handler/main.yml akan berisi:
+       ![result-deploy](assets/result-deplot.png)
 
