@@ -394,7 +394,13 @@ lxc-copy -n ubuntu_landing -N ubuntu_landing_backup -sKD
          command:  mysql -u root --execute="CREATE USER IF NOT EXISTS '{{ username }}'@'localhost' IDENTIFIED BY '{{ password }}';"
        
        - name: GRANT ALL PRIVILEGES to user {{username}}
-         command:  mysql -u root --execute="GRANT ALL PRIVILEGES ON * . * TO '{{ username }}'@'localhost';;"
+         command:  mysql -u root --execute="GRANT ALL PRIVILEGES ON * . * TO '{{ username }}'@'localhost';"
+       
+       - name: Create user for remote mysql
+         command:  mysql -u root --execute="CREATE USER IF NOT EXISTS '{{ username }}'@'%' IDENTIFIED BY '{{ password }}';"
+       
+       - name: GRANT ALL PRIVILEGES to remote user {{username}}
+         command:  mysql -u root --execute="GRANT ALL PRIVILEGES ON * . * TO '{{ username }}'@'%';"
          
        - name: sql query flush
          command:  mysql -u root --execute="FLUSH PRIVILEGES"
@@ -670,41 +676,44 @@ lxc-copy -n ubuntu_landing -N ubuntu_landing_backup -sKD
      - roles/pma/templates/pma.local akan berisi:
      
      ```ini
-       server {
+     server {
          listen 80;
-       
-           server_name {{servername}};
-       
-           root /usr/share/phpmyadmin;
-       
-           index index.php;
-       
-           location / {
-       
-                try_files $uri $uri/ @phpmyadmin;
-       
-        	}
-       	location @phpmyadmin {
-                   fastcgi_pass unix:/run/php/php7.2-fpm.sock;   #Sesuaikan dengan versi PHP
-       
-                   fastcgi_param SCRIPT_FILENAME /usr/share/phpmyadmin/index.php;
-       
-                   include /etc/nginx/fastcgi_params;
-       
-                   fastcgi_param SCRIPT_NAME /index.php;
-           }
-           location ~ \.php$ {
-       
-                   fastcgi_pass unix:/run/php/php7.2-fpm.sock;  #Sesuaikan dengan versi PHP
-       
-                   fastcgi_index index.php;
-       
-                   fastcgi_param SCRIPT_FILENAME /usr/share/phpmyadmin$fastcgi_script_name;
-       
-                   include fastcgi_params;
-       
-           }
-       }
+     
+         server_name {{servername}};
+     
+         root /usr/share/phpmyadmin;
+     
+         index index.php;
+     
+         location / {
+     
+              try_files $uri $uri/ @phpmyadmin;
+     
+      }
+     
+      location @phpmyadmin {
+                 fastcgi_pass unix:/run/php/php7.2-fpm.sock;   #Sesuaikan dengan versi PHP
+     
+                 fastcgi_param SCRIPT_FILENAME /usr/share/phpmyadmin/index.php;
+     
+                 include /etc/nginx/fastcgi_params;
+     
+                 fastcgi_param SCRIPT_NAME /index.php;
+     
+         }
+     
+         location ~ \.php$ {
+     
+                 fastcgi_pass unix:/run/php/php7.2-fpm.sock;  #Sesuaikan dengan versi PHP
+     
+                 fastcgi_index index.php;
+     
+                 fastcgi_param SCRIPT_FILENAME /usr/share/phpmyadmin$fastcgi_script_name;
+     
+                 include fastcgi_params;
+     
+         }
+     }
      ```
      
      - roles/pma/handlers/main.yml akan berisi:
