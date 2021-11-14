@@ -7,28 +7,31 @@ Namun mereka diberi tahu lagi oleh programmer senior, pak Dzul. dimana ternyata 
 # Soal Praktikum
 
 1. Rubah LXC landing dengan ubuntu focal (destroy n create, same ip, same name)
-
 2. Rubah LXC php7 dengan ubuntu focal (destroy n create, same ip, same name)
-
 3. vm.local/
 
    - akan diinstall menggunakan framework laravel 8 pada lxc_landing
+
    - laravel 8 menggunakan php7.4
+
    - tentunya harus bisa connect ke server database (lxc_mariadb)
-   - semua script instalasi tidak ada yang manual, harus menggunakan ansible, termasuk membuat database (sungguh mereka jumawa sekali)
+
+   - semua script instalasi tidak ada yang manual (kecuali openssh-server), harus menggunakan ansible, termasuk membuat database (sungguh mereka jumawa sekali)
 
 4. vm.local/blog
 
    - install wordpress terbaru pada lxc_php7.4
-
    - wordpress menggunakan php7.4
-
    - tentunya harus bisa connect ke server database (lxc_mariadb)
-
-   - semua script instalasi tidak ada yang manual, harus menggunakan ansible, termasuk membuat database (sungguh mereka jumawa sekali)
-
+   - semua script instalasi tidak ada yang manual (kecuali openssh-server), harus menggunakan ansible, termasuk membuat database (sungguh mereka jumawa sekali)
    - Bisa masuk dashboard
 
-   
 
-   
+![meme](assets/meme.jpeg)
+
+![5u4mx6](assets/5u4mx6.jpg)
+
+
+
+
+
