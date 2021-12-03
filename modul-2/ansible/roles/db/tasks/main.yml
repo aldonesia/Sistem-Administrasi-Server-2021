@@ -1,0 +1,65 @@
+---
+- name: delete apt chache
+  become: yes
+  become_user: root
+  become_method: su
+  command: rm -vf /var/lib/apt/lists/*
+
+- name: install mariadb
+  become: yes
+  become_user: root
+  become_method: su
+  apt: name={{ item }} state=latest update_cache=true
+  with_items:
+   - python
+   - mariadb-server
+   - python-mysqldb
+   - python-pymysql
+
+- name: Stop MySQL
+  service: name=mysqld state=stopped
+  
+- name: set environment variables
+  shell: systemctl set-environment MYSQLD_OPTS="--skip-grant-tables"
+  
+- name: Start MySQL
+  service: name=mysqld state=started
+  
+- name: sql query
+  command:  mysql -u root --execute="UPDATE mysql.user SET authentication_string = PASSWORD('{{ password }}') WHERE User = 'root' AND Host = 'localhost';"
+  
+- name: sql query flush
+  command:  mysql -u root --execute="FLUSH PRIVILEGES"
+  
+- name: Stop MySQL
+  service: name=mysqld state=stopped
+  
+- name: unset environment variables
+  shell: systemctl unset-environment MYSQLD_OPTS
+  
+- name: Start MySQL
+  service: name=mysqld state=started
+  
+- name: Create user for mysql
+  command:  mysql -u root --execute="CREATE USER IF NOT EXISTS '{{ username }}'@'localhost' IDENTIFIED BY '{{ password }}';"
+
+- name: GRANT ALL PRIVILEGES to user {{username}}
+  command:  mysql -u root --execute="GRANT ALL PRIVILEGES ON * . * TO '{{ username }}'@'localhost';;"
+  
+- name: sql query flush
+  command:  mysql -u root --execute="FLUSH PRIVILEGES"
+  
+- name: Create DB Landing
+  command:  mysql -u root --execute="CREATE DATABASE IF NOT EXISTS `landing`;"
+
+- name: Create DB blog
+  command:  mysql -u root --execute="CREATE DATABASE IF NOT EXISTS `blog`;"
+
+- name: Create DB app
+  command:  mysql -u root --execute="CREATE DATABASE IF NOT EXISTS `app`;"
+
+- name: Copy .my.cnf file with root password credentials
+  template: 
+    src=templates/my.cnf 
+    dest=/etc/mysql/mariadb.conf.d/50-server.cnf
+  notify: restart mysql

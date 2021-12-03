@@ -1,0 +1,19 @@
+---
+- name: stop apache2
+  become: yes
+  become_user: root
+  become_method: su
+  action: service name=apache2 state=stopped
+  
+- name: restart nginx
+  become: yes
+  become_user: root
+  become_method: su
+  action: service name=nginx state=restarted
+  
+- name: restart php
+  become: yes
+  become_user: root
+  become_method: su
+  action: service name=php7.2-fpm state=restarted
+  

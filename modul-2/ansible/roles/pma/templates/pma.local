@@ -1,0 +1,35 @@
+  server {
+    listen 80;
+  
+      server_name {{servername}};
+  
+      root /usr/share/phpmyadmin;
+  
+      index index.php;
+  
+      location / {
+  
+           try_files $uri $uri/ @phpmyadmin;
+  
+        }
+        location @phpmyadmin {
+              fastcgi_pass unix:/run/php/php7.2-fpm.sock;   #Sesuaikan dengan versi PHP
+  
+              fastcgi_param SCRIPT_FILENAME /usr/share/phpmyadmin/index.php;
+  
+              include /etc/nginx/fastcgi_params;
+  
+              fastcgi_param SCRIPT_NAME /index.php;
+      }
+      location ~ \.php$ {
+  
+              fastcgi_pass unix:/run/php/php7.2-fpm.sock;  #Sesuaikan dengan versi PHP
+  
+              fastcgi_index index.php;
+  
+              fastcgi_param SCRIPT_FILENAME /usr/share/phpmyadmin$fastcgi_script_name;
+  
+              include fastcgi_params;
+  
+      }
+  }
