@@ -10,7 +10,9 @@ buka powershell as admin dan ketik
 wsl --install 
 ```
 ![wsl install](assets/wsl-install.jpeg)
-lantas restart laptop 
+
+lalu silahkan restart laptop
+
 ![restart laptop](assets/indy-restart-laptop.jpeg)
 #### Install Debian dari microsoft store
 ![Debian Microsoft Store](assets/debian.png)

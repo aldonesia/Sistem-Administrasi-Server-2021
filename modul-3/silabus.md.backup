@@ -13,9 +13,9 @@ wsl --install
 lantas restart laptop 
 ![restart laptop](assets/indy-restart-laptop.jpeg)
 #### Install Debian dari microsoft store
-![](assets/debian.png)
+![Debian Microsoft Store](assets/debian.png)
 #### Install Ubuntu Focal dari microsoft store
-![](assets/ubuntu20.png)
+![Ubuntu Microsoft Store](assets/ubuntu20.png)
 
 ### References
 * https://febryanramadhan.medium.com/apa-itu-wsl-windows-subsystem-for-linux-dan-cara-update-ke-wsl2-655c0eae98bf
