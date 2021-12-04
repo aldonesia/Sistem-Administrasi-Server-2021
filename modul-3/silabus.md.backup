@@ -10,12 +10,14 @@ buka powershell as admin dan ketik
 wsl --install 
 ```
 ![wsl install](assets/wsl-install.jpeg)
-lantas restart laptop 
+
+lalu silahkan restart laptop
+
 ![restart laptop](assets/indy-restart-laptop.jpeg)
-#### Install Debian dari microsoft store
-![Debian Microsoft Store](assets/debian.png)
+#### Install Ubuntu Bionic dari microsoft store
+![Ubuntu Bionic Microsoft Store](assets/ubuntu18.png)
 #### Install Ubuntu Focal dari microsoft store
-![Ubuntu Microsoft Store](assets/ubuntu20.png)
+![Ubuntu Focal Microsoft Store](assets/ubuntu20.png)
 
 ### References
 * https://febryanramadhan.medium.com/apa-itu-wsl-windows-subsystem-for-linux-dan-cara-update-ke-wsl2-655c0eae98bf
@@ -51,7 +53,16 @@ Adalah informasi yang dimiliki oleh suatu DNS zone.
 | TTL           | (waktu untuk tinggal) - Jumlah detik nama domain di-cache secara lokal sebelum kadaluarsa dan kembali ke nameserver otoritatif untuk informasi terbaru|
 
 ### Latihan
-#### 
+#### Persiapan Konfigurasi
+
+#### Instalasi DNS Master
+
+#### Konfigurasi DNS Master
+
+#### Instalasi DNS Slave  
+
+#### Konfigutasi DNS Slave
+
 ### References
 * https://computer.howstuffworks.com/dns.htm
 * http://knowledgelayer.softlayer.com/faq/what-does-serial-refresh-retry-expire-minimum-and-ttl-mean
@@ -70,6 +81,9 @@ Load balancing adalah suatu mekanisme penyeimbangan beban yang bekerja dengan ca
 ![Load Balancing](assets/load-balancing.jpg)
 ### Kenapa dibutuhkan load balancing?
 Untuk menangani banyaknya pengguna yang mengakses layanan pada satu waktu dan menjaga layanan tetap tersedia setiap saat, dibutuhkan lebih dari satu komputer untuk memasang layanannya. Dengan layanan yang tersedia di banyak server, dibutuhkan mekanisme pembagian beban untuk memberikan beban yang seimbang pada setiap server. Dengan meletakkan layanan pada beberapa server dan pembagian beban yang optimal, setiap permintaan pengguna bisa ditangani dengan efisien.
+
+### Latihan
+#### Konfigurasi Load Balancing pada nginx
 
 
 ## Selamat Menunggu Soal Praktikum :)
