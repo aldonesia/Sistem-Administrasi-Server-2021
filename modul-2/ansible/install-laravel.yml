@@ -1,0 +1,9 @@
+---
+- hosts: ubuntu_landing
+  vars:
+    username: 'admin'
+    password: 'SysAdminSas0102'
+    domain: 'lxc_landing.dev'
+  roles:
+    - php
+    - lv

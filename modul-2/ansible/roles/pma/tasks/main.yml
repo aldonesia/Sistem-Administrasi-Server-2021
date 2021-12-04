@@ -1,0 +1,47 @@
+---
+- name: delete apt chache
+  become: yes
+  become_user: root
+  become_method: su
+  command: rm -vf /var/lib/apt/lists/*
+
+- name: install nginx phpmyadmin
+  become: yes
+  become_user: root
+  become_method: su
+  apt: name={{ item }} state=latest update_cache=true
+  with_items:
+    - curl
+    - nginx
+    - nginx-extras
+    - php7.2-fpm
+    - php-mbstring
+    - php-zip
+    - php-gd
+    - php-json
+    - php-curl
+    - phpmyadmin
+
+- name: enable module php mbstring
+  command: phpenmod mbstring
+  notify:
+    - restart php
+
+- name: Copy pma.local
+  template:
+    src=templates/pma.local
+    dest=/etc/nginx/sites-available/{{ domain }}
+  vars:
+    servername: '{{ domain }}'
+
+- name: Symlink pma.local
+  command: ln -sfn /etc/nginx/sites-available/{{ domain }} /etc/nginx/sites-enabled/{{ domain }}
+  notify:
+    - restart nginx
+
+- name: Write {{ domain }} to /etc/hosts
+  lineinfile:
+    dest: /etc/hosts
+    regexp: '.*{{ domain }}$'
+    line: "127.0.0.1 {{ domain }}"
+    state: present

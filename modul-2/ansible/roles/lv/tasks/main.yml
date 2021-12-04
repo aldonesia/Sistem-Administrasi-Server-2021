@@ -1,0 +1,73 @@
+---
+- name: delete apt chache
+  become: yes
+  become_user: root
+  become_method: su
+  command: rm -vf /var/lib/apt/lists/*
+
+- name: Download and install Composer
+  shell: curl -sS https://getcomposer.org/installer | php
+  args:
+    chdir: /usr/src/
+    creates: /usr/local/bin/composer
+    warn: false
+  become: yes
+
+- name: Add Composer to global path
+  copy:
+    dest: /usr/local/bin/composer
+    group: root
+    mode: '0755'
+    owner: root
+    src: /usr/src/composer.phar
+    remote_src: yes
+  become: yes
+
+- name: Ansible delete file create-project
+  file:
+    path: /var/www/html/landing
+    state: absent
+
+- name: composer create-project
+  shell: /usr/local/bin/composer create-project laravel/laravel /var/www/html/landing --prefer-dist --no-interaction
+
+- name: Copy .env.template
+  template:
+    src=templates/env.template
+    dest=/var/www/html/landing/.env
+
+- name: composer
+  shell: cd /var/www/html/landing; /usr/local/bin/composer install  --no-interaction
+
+- name: key
+  shell: /usr/bin/php7.4 /var/www/html/landing/artisan key:generate
+
+- name: chmod
+  become: yes
+  become_user: root
+  become_method: su
+  command: chmod 777 -R /var/www/html/landing/storage
+
+- name : www.conf
+  template:
+    src=templates/www.conf
+    dest=/etc/php/7.4/fpm/pool.d/www.conf
+
+- name: Copy lv.conf
+  template:
+    src=templates/lv.conf
+    dest=/etc/nginx/sites-available/{{ domain }}
+  vars:
+    servername: '{{ domain }}'
+
+- name: Symlink lv.conf
+  command: ln -sfn /etc/nginx/sites-available/{{ domain }} /etc/nginx/sites-enabled/{{ domain }}
+  notify:
+    - restart nginx
+
+- name: Write {{ domain }} to /etc/hosts
+  lineinfile:
+    dest: /etc/hosts
+    regexp: '.*{{ domain }}$'
+    line: "127.0.0.1 {{ domain }}"
+    state: present

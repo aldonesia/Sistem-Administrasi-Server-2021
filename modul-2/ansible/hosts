@@ -1,0 +1,9 @@
+[php5]
+ubuntu_landing ansible_host=lxc_landing.dev ansible_ssh_user=root ansible_become_pass=120219022
+debian_php5 ansible_host=lxc_php5.dev ansible_ssh_user=root ansible_become_pass=1202190022
+
+[php7]
+ubuntu_php7 ansible_host=lxc_php7.dev ansible_ssh_user=root ansible_become_pass=1202190022
+
+[database]
+lxc_mariadb ansible_host=lxc_mariadb.dev ansible_ssh_user=root ansible_become_pass=1202190022

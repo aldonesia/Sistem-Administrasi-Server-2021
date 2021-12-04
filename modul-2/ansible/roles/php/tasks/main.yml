@@ -1,0 +1,34 @@
+---
+- name: delete apt chache
+  become: yes
+  become_user: root
+  become_method: su
+  command: rm -vf /var/lib/apt/lists/*
+
+- name: install php
+  become: yes
+  become_user: root
+  become_method: su
+  apt: name={{ item }} state=latest update_cache=true
+  with_items:
+    - gtkhash
+    - crack-md5
+    - git
+    - curl
+    - nginx
+    - nginx-extras
+    - php7.4
+    - php7.4-fpm
+    - php7.4-curl
+    - php7.4-xml
+    - php7.4-gd
+    - php7.4-opcache
+    - php7.4-mbstring
+    - php7.4-zip
+    - php7.4-json
+    - php7.4-cli
+
+- name: enable module php mbstring
+  command: phpenmod mbstring
+  notify:
+    - restart php

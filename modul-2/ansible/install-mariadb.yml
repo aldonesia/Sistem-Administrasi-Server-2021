@@ -1,0 +1,8 @@
+- hosts: database
+  vars:
+    username: 'admin'
+    password: '1202190022'
+    domain: 'lxc_mariadb.dev'
+  roles:
+    - db
+    - pma
