@@ -1,26 +1,4 @@
-# Modul 3 - Virtualisasi WSL, DNS, & Load Balancer
-
-## WSL (*Windows Subsystem for Linux*)
-### Pengertian
-Sebuah perangkat lunak yang memungkinkan para developers menjalankan peintah-perintah GNU/Linux di Windows. Perangkat lunak ini bisa berupa perintah baris, utilitas atau aplikasi, langsung pada Windows. Jadi seolah-olah seperti menggabungkan dua OS sekaligus yaitu Linux di dalam Windows.
-### Instalasi WSL2
-#### Instal Kernel wsl2
-buka powershell as admin dan ketik
-```ps 
-wsl --install 
-```
-![wsl install](assets/wsl-install.jpeg)
-
-lalu silahkan restart laptop
-
-![restart laptop](assets/indy-restart-laptop.jpeg)
-#### Install Ubuntu Bionic dari microsoft store
-![Ubuntu Bionic Microsoft Store](assets/ubuntu18.png)
-#### Install Ubuntu Focal dari microsoft store
-![Ubuntu Focal Microsoft Store](assets/ubuntu20.png)
-
-### References
-* https://febryanramadhan.medium.com/apa-itu-wsl-windows-subsystem-for-linux-dan-cara-update-ke-wsl2-655c0eae98bf
+# Modul 3 - DNS, & Load Balancer
 
 ## DNS (*Domain Name Server*)
 ### Pengertian
@@ -54,14 +32,169 @@ Adalah informasi yang dimiliki oleh suatu DNS zone.
 
 ### Latihan
 #### Persiapan Konfigurasi
+1. Hapus hosts vm.local dari hostfile windows
+	![host windows](assets/host-windows.png)
+2. Buka Ubuntu VM, pastikan network menggunakan bridge network
+3. Tambahkan konfigurasi nginx untuk virtual hosts vm.local
+	![Nginx VM local](assets/nginx-vm.local.png)
+4. Edit etc/hosts
+	![Konfigurasi hosts](assets/etc-hosts.png)
+5. Restart nginx
+	```bash
+	sudo service nginx restart
+	```
+6. Check Konfigurasi
+	```bash
+	curl -i http://vm.local
+	curl -i http://www.wm.local
+	```
+7. Catat IP VM
+	```bash
+	ip addr show enp0s3
+	```
+	![ip addr show](assets/ip-addr-show.png)
+	
+	kita catat bahwa IP VM kita adalah 172.20.10.4	
 
 #### Instalasi DNS Master
+DNS master adalah DNS utama yang akan digunakan sebagai penerjemah alamat domain menjadi alamat ip. untuk instalasi, silahkan buka ubuntu VM. DNS Master menggunakan aplikasi bind9, untuk langkah instalasi hanya perlu menuliskan
+```bash
+sudo apt install bind9
+```
+![Ubuntu 20 Install Bind9](assets/ubuntu20-install-bind9.png)
 
 #### Konfigurasi DNS Master
+1. Pembuatan Domain
+	- Lakukan perintah untuk merubah konfigurasi bind9 seperti dibawah ini
+		```bash
+		sudo nano /etc/bind/named.conf.local
+		```
+	- Daftarkan domain vm.local
+		```bash
+		zone "vm.local" {
+			type master;
+			file "/etc/bind/vm/vm.local";
+		};
+		```
+		![named conf local](assets/named-conf-local.png)
+	- Buat folder vm di dalam /etc/bind
+		```bash
+		sudo mkdir /etc/bind/vm
+		```
+	- Copykan file db.local pada path /etc/bind ke dalam folder vm yang baru saja dibuat dan ubah namanya menjadi vm.local
+		```bash
+		sudo cp /etc/bind/db.local /etc/bind/vm/vm.local
+		```
+	- Kemudian buka file vm.local dan edit seperti gambar berikut dengan IP ubuntu VM masing-masing kelompok:
+	- 
+		![](assets/vmlocal-conf.png)
+	- Restart bind9 dengan perintah
+		```bash
+		sudo service bind9 restart
+		```
+2. Reverse DNS (Record PTR)
 
-#### Instalasi DNS Slave  
+	Jika pada pembuatan domain sebelumnya DNS server kita bekerja menerjemahkan string domain vm.local kedalam alamat IP agar dapat dibuka, maka Reverse DNS atau Record PTR digunakan untuk menerjemahkan alamat IP ke alamat domain yang sudah diterjemahkan sebelumnya.
+	- Edit file /etc/bind/named.conf.local pada wsl
+		```bash
+		sudo nano /etc/bind/named.conf.local
+		```
+	- Lalu tambahkan konfigurasi berikut ke dalam file named.conf.local
+		```bash
+		zone "10.20.172.in-addr.arpa" {
+		    type master;
+		    file "/etc/bind/vm/100.168.192.in-addr.arpa";
+		};
+		```
+		![vmlocal-conf2](assets/vmlocal-conf2.png)
+	- Copykan file db.local pada path /etc/bind ke dalam folder jarkom yang baru saja dibuat dan ubah namanya menjadi 10.20.172.in-addr.arpa
+		```bash
+		sudo cp /etc/bind/db.local /etc/bind/vm/10.20.172.in-addr.arpa
+		```
+		*Keterangan 10.20.172 adalah 3 byte pertama IP VM yang dibalik urutan penulisannya*
+	- Edit file 10.20.172.in-addr.arpa menjadi seperti gambar di bawah ini
+		```bash
+		sudo nano /etc/bind/vm/10.20.172.in-addr.arpa
+		```
+		![vmlocal-conf3](assets/vmlocal-conf3.png)
+	- Kemudian restart bind9 dengan perintah
+		```bash
+		sudo service bind9 restart
+		```
+	- Rubah DNS wsl dengan ip wsl, dan beri comment pada default dns
+		```bash
+		sudo nano /etc/resolv.conf
+		```
+		![etc-resolv](assets/etc-resolv.png)
+	- Untuk mengecek apakah konfigurasi sudah benar atau belum, lakukan perintah berikut 
+		```bash
+		sudo apt install dnsutils
+		host -t PTR "IP VM"
+		```
+		![host-ptr](assets/host-ptr.png)
+3. Record CNAME
 
-#### Konfigutasi DNS Slave
+	Record CNAME adalah sebuah record yang membuat alias name dan mengarahkan domain ke alamat/domain yang lain.
+	- edit file /etc/bind/vm/vm.local
+		```bash
+		sudo nano /etc/bind/vm/vm.local
+		```
+		![cname](assets/cname.png)
+	- Kemudian restart bind9 dengan perintah
+		```bash
+		sudo /etc/init.d/named restart
+		```
+	- Lalu cek dengan melakukan host -t CNAME www.vm.local atau ping www.vm.local. Hasilnya harus mengarah ke host dengan IP VM.
+	![success](assets/success.png)
+4. DNS Forwarder
+	DNS Forwarder digunakan untuk mengarahkan DNS Server ke IP yang ingin dituju.
+	- Edit file /etc/bind/named.conf.options
+	- Uncomment pada bagian ini
+		```bash
+		forwarders {
+		    8.8.8.8;
+		};
+		```
+	- Comment pada bagian ini
+		```bash
+		// dnssec-validation auto;
+		```
+	- Dan tambahkan
+		```bash
+		allow-query{any;};
+		```
+		![dns forwarder](assets/dns-forwarder.png)
+	- Kemudian restart bind9 dengan perintah
+		```bash
+		sudo service bind9 restart
+		```
+	- Harusnya jika nameserver pada file /etc/resolv.conf di client diubah menjadi IP WSL maka akan di forward ke IP DNS google yaitu 8.8.8.8 dan bisa mendapatkan koneksi.
+5. Setting nameserver pada client
+	- Untuk linux, mengganti dns hanya perlu merubah /etc/resolv.conf
+	- Untuk Windows, ikuti step dibawah ini
+		+ buka control panel
+		+ pilih network and internet
+		+ pilih network and sharing center
+			![](assets/cp-1.png)
+		+ pilih change adapter setting
+			![](assets/cp-2.png)
+		+ jikalau menggunakan wifi, silahkan click kanan -> properties pada wifi adapter, jikalau menggunakan lan, silahkan click kanan -> properties pada ethernet
+			![](assets/cp-3.png)
+		+ pilih internet protocol version (TCP/IPv4), lalu klik properties
+			![](assets/cp-4.png)
+		+ ganti dns dengan ip wsl 
+
+			![](assets/cp-5.png)
+		+ coba akses www.vm.local dan vm.local pada browser kesayangan anda
+			![](assets/success-vmlocal.png)
+		+ coba akses google.com dengan browser kesayangan anda
+			![](assets/success-google.png)
+		+ cek dns dengan cmd di windows
+			```ps
+			ipconfig/all
+			```
+			![](assets/cmd-dns.png)
+		+ jika tidak bisa akes vm.local, silahkan kembali ke adapter wifi, dan uncheck internet protocol version (TCP/IPv6)
 
 ### References
 * https://computer.howstuffworks.com/dns.htm
@@ -72,20 +205,12 @@ Adalah informasi yang dimiliki oleh suatu DNS zone.
 
 ------
 
-## Load Balancer
-### Dasar Teori
-#### Web Server
-Web Server adalah perangkat yang menyediakan layanan akses kepada pengguna melalui protokol HTTP atau HTTPS melalui aplikasi web.
-#### Load Balancing
-Load balancing adalah suatu mekanisme penyeimbangan beban yang bekerja dengan cara membagi beban pekerjaan. Load balancer adalah aplikasi atau alat yang bertugas untuk melakukan load balancing . Load balancer dapat meggunakan berbagai macam algoritma load balancing yang bertujuan untuk membagi beban pekerjaan seadil-adilnya. Minimal arsitektur load balancing adalah sebagai berikut:
-![Load Balancing](assets/load-balancing.jpg)
-### Kenapa dibutuhkan load balancing?
-Untuk menangani banyaknya pengguna yang mengakses layanan pada satu waktu dan menjaga layanan tetap tersedia setiap saat, dibutuhkan lebih dari satu komputer untuk memasang layanannya. Dengan layanan yang tersedia di banyak server, dibutuhkan mekanisme pembagian beban untuk memberikan beban yang seimbang pada setiap server. Dengan meletakkan layanan pada beberapa server dan pembagian beban yang optimal, setiap permintaan pengguna bisa ditangani dengan efisien.
-
-### Latihan
-#### Konfigurasi Load Balancing pada nginx
-
-
-## Selamat Menunggu Soal Praktikum :)
+## Soal Praktikum
+1. buat subdomain dev.vm.local dengan menggunakan ansible dengan beberapa aturan:
+	1. Menggunakan ansible
+	2. menggunakan lxc yang sama dengan yang digunakan dengan vm.local
+	3. folder code harus berbeda dengan yang digunakan vm.local, gunakan /var/www/html/dev/{nama_app}
+2. Daftarkan subdomain vm.local ke DNS
+3. responsi di minggu ke 11
 
 
