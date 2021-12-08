@@ -38,6 +38,7 @@ Adalah informasi yang dimiliki oleh suatu DNS zone.
 3. Tambahkan konfigurasi nginx untuk virtual hosts vm.local
 	![Nginx VM local](assets/nginx-vm.local.png)
 4. Edit etc/hosts
+
 	![Konfigurasi hosts](assets/etc-hosts.png)
 5. Restart nginx
 	```bash
@@ -145,6 +146,7 @@ sudo apt install bind9
 		sudo /etc/init.d/named restart
 		```
 	- Lalu cek dengan melakukan host -t CNAME www.vm.local atau ping www.vm.local. Hasilnya harus mengarah ke host dengan IP VM.
+	
 	![success](assets/success.png)
 4. DNS Forwarder
 	DNS Forwarder digunakan untuk mengarahkan DNS Server ke IP yang ingin dituju.
@@ -181,9 +183,10 @@ sudo apt install bind9
 		+ jikalau menggunakan wifi, silahkan click kanan -> properties pada wifi adapter, jikalau menggunakan lan, silahkan click kanan -> properties pada ethernet
 			![](assets/cp-3.png)
 		+ pilih internet protocol version (TCP/IPv4), lalu klik properties
+		
 			![](assets/cp-4.png)
 		+ ganti dns dengan ip wsl 
-
+		
 			![](assets/cp-5.png)
 		+ coba akses www.vm.local dan vm.local pada browser kesayangan anda
 			![](assets/success-vmlocal.png)
