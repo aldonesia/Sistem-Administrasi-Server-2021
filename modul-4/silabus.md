@@ -65,6 +65,7 @@ Mekanisme (atau metode) Load Balancing berikut didukung di nginx:
 	```
 
 3. Ip Hash
+
 	fungsi hash digunakan untuk menentukan server apa yang harus dipilih untuk permintaan berikutnya (berdasarkan alamat IP klien).
 	```sh
 	http {
@@ -456,3 +457,10 @@ Menjalankan Test secara otomatis. Caranya :
 	2. /app menggunakan ip hash
 	3. disarakan menggunakan ansible untuk instalasi
 2. Gunakan apache Jmeter untuk menganalisa perbedaan antara /, /app, /blog dengan loadbalancer dan tanpa loadbalancer pada traffic 50, 100 dan 150 users. Analisa dari segi waktu saja. Tulis langkah testing dan analisa dengan bahasa sendiri.
+
+## Referensi
+1. http://nginx.org/en/docs/http/load_balancing.html
+2. https://jmeter.apache.org/
+3. http://coding4ever.net/blog/2015/10/20/performance-test-menggunakan-jmeter/
+4. https://www.youtube.com/watch?v=mXGcBvWYl-U
+5. https://medium.com/doku-insight/jmeter-87cccc713733
