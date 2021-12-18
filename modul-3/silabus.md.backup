@@ -46,7 +46,7 @@ Adalah informasi yang dimiliki oleh suatu DNS zone.
 6. Check Konfigurasi
 	```bash
 	curl -i http://vm.local
-	curl -i http://www.wm.local
+	curl -i http://www.vm.local
 	```
 7. Catat IP VM
 	```bash
@@ -103,7 +103,7 @@ sudo apt install bind9
 		```bash
 		zone "10.20.172.in-addr.arpa" {
 		    type master;
-		    file "/etc/bind/vm/100.168.192.in-addr.arpa";
+		    file "/etc/bind/vm/10.20.172.in-addr.arpa";
 		};
 		```
 		![vmlocal-conf2](assets/vmlocal-conf2.png)
