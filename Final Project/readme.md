@@ -41,7 +41,7 @@ Setiap website memiliki load balancer ke beberapa instance lxc
 4. kelompokXX.fpsas/app
 	1. Menggunakan metode load balancer Round Robin 2 instance LXC, antara lain LXC_PHP5_1, LXC_PHP5_2
 	
-Server terpusat menggunakan lxc debian 10 dengan nama LXC_DB_SERVER 
+Database Server terpusat menggunakan lxc debian 10 dengan nama LXC_DB_SERVER 
 
 ## Analisa Performa Arsitektur
 
@@ -66,7 +66,7 @@ Penilaian meliputi:
 
 1. Konfigurasi Ansible (Semakin Otomatis semakin bagus, tidak ada konfigurasi manual)
 2. Hasil dan Jawaban Analisa
-3. Presentasi (Jadwal Praktikum Minggu 16) dan Dokumentasi
+3. Presentasi (Minggu 17, Jadwal Menyusul) dan Dokumentasi
 
 
 ## Referensi Instalasi

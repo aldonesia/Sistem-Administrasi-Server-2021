@@ -41,7 +41,7 @@ Setiap website memiliki load balancer ke beberapa instance lxc
 4. kelompokXX.fpsas/app
 	1. Menggunakan metode load balancer Round Robin 2 instance LXC, antara lain LXC_PHP5_1, LXC_PHP5_2
 	
-Server terpusat menggunakan lxc debian 10 dengan nama LXC_DB_SERVER 
+Database Server terpusat menggunakan lxc debian 10 dengan nama LXC_DB_SERVER 
 
 ## Analisa Performa Arsitektur
 
@@ -56,7 +56,7 @@ Sung Jin-Woo memberikan tugas kepada stephanie dan gede untuk melakukan loadtest
 
 ## Pengumpulan Final Project
 
-Link Dokumentasi dan konfigurasi ansible diupload ke github dan url github di kirim ke elearning maksimal 30 Januari 2022 
+Link Dokumentasi dan konfigurasi ansible diupload ke github dan url github di kirim ke elearning maksimal 30 Januari 2022 pukul 20.22
 
 ## Penilaian dan Demonstrasi Final Project
 
