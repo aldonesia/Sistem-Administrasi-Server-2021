@@ -120,6 +120,24 @@ Platform ini merupakan cikal bakal  lahirnya container. Linux Containers (LXC) i
   deb-src http://archive.canonical.com/ubuntu focal partner
   
   ```
+
+  untuk ubuntu 22.04 rubah menjadi
+  ```
+  deb http://archive.ubuntu.com/ubuntu/ jammy main restricted universe multiverse
+  deb-src http://archive.ubuntu.com/ubuntu/ jammy main restricted universe multiverse
+
+  deb http://archive.ubuntu.com/ubuntu/ jammy-updates main restricted universe multiverse
+  deb-src http://archive.ubuntu.com/ubuntu/ jammy-updates main restricted universe multiverse
+
+  deb http://archive.ubuntu.com/ubuntu/ jammy-security main restricted universe multiverse
+  deb-src http://archive.ubuntu.com/ubuntu/ jammy-security main restricted universe multiverse
+
+  deb http://archive.ubuntu.com/ubuntu/ jammy-backports main restricted universe multiverse
+  deb-src http://archive.ubuntu.com/ubuntu/ jammy-backports main restricted universe multiverse
+
+  deb http://archive.canonical.com/ubuntu/ jammy partner
+  deb-src http://archive.canonical.com/ubuntu/ jammy partner
+  ```
   
   ![edit-source-list](assets/edit-source-list.png)
   
